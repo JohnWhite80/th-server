@@ -19,7 +19,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.github.th.server.entity.User;
 import com.github.th.server.service.CoreService;
+import com.github.th.server.util.SecurityUtil;
 
 @Controller
 public class CoreController {
@@ -78,10 +80,11 @@ public class CoreController {
 	
 	@RequestMapping(value = "/login.json", method = RequestMethod.POST)
 	public @ResponseBody ResponseEntity<Map<String, Object>> postLogin(@RequestParam("email") String email, @RequestParam("password") String password) throws Exception {
-		Object o = coreService.login(email, password);
+		User u = coreService.login(email, password);
 		Map<String, Object> result = new HashMap<String, Object>();
-		result.put("code", "OK");
-		result.put("message", "created:" + o);
+		result.put("code", "ok");
+		result.put("token", SecurityUtil.generateLoginToken(u.getId(), u.getEmail()));
+		result.put("user", u);
 		return new ResponseEntity<Map<String, Object>>(result, HttpStatus.OK);
 	}
 }
